@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.15",
+    "antd": "^5.22.2",
+    "github-markdown-css": "^5.8.0",
     "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
     "nex-profile": "file:",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",

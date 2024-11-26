@@ -9,8 +9,6 @@ export const getAllPosts = () => {
     const fileNames = fs.readdirSync(postDir);
 
     return fileNames.map((fileName) => {
-        // 过滤掉非 .md 文件
-        if (!fileName.endsWith(".md")) return null;
 
         // 去除 .md 后缀作为路由参数
         const slug = fileName.replace(/\.md$/, "");
@@ -21,11 +19,11 @@ export const getAllPosts = () => {
         const fileContents = fs.readFileSync(filePath, "utf8");
 
         const { content, data } = matter(fileContents);
-
+        
         return {
             slug,
             content,
             data
         };
-    }).filter(Boolean);  // 过滤掉 null 值
+    })
 };

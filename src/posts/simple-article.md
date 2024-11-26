@@ -1,168 +1,311 @@
 ---
-title: "浏览器缓存"
-date: "2024-11-26"
-author: "Simon"
+title: "123"
+date: "2024/11/18"
+author: "The FontEnd Team of TIC"
 ---
-# 浏览器缓存策略
+## 简要说明
 
-强制缓存阶段：先在本地查找该资源，如果有发现该资源，而且该资源还没有过期，就使用这一个资源，完全不会发送 http 请求到服务器。
-协商缓存阶段：如果在本地缓存找到对应的资源，但是不知道该资源是否过期或者已经过期，则发一个 http 请求到服务器,然后服务器判断这个请求，如果请求的资源在服务器上没有改动过，则返回 304，让浏览器使用本地找到的那个资源。
-启发式缓存阶段：当缓存过期时间的字段一个都没有的时候，浏览器下次并不会直接进入协商阶段，而是先进入启发式缓存阶段，它根据响应头中 2 个时间字段 Date 和 Last-Modified 之间的时间差值，取其值的 10%作为缓存时间周期。也就是说，当存有 Last-Modified 字段的时候，即使是断网，且强缓存都失效后，也有一定时间是直接读取缓存文件的。etag 是没有这个阶段的。
-缓存失败阶段：当服务器发现请求的资源已经修改过，或者这是一个新的请求(再本来没有找到资源)，服务器则返回该资源的数据，并且返回 200， 当然这个是指找到资源的情况下，如果服务器上没有这个资源，则返回 404。
+- 响应式布局主要用于适应不同设备的屏幕，进一步完善用户体验
 
-# 强缓存
+- 以下代码使用 bootstrap 实现 H5 原生页面的响应式布局
 
-强缓存可以通过设置两种 HTTP 请求头来实现，分别是 Expires 和 Cache-Control 。强缓存表示在缓存期间不需要请求，state code 为 200。
-Expires
-Expires 是 HTTP/1 的产物，Expires 的值为服务端返回的数据到期时间。当再次请求时的请求时间小于返回的此时间，则直接使用缓存数据。
-Expires: Wed, 16 Nov 2020 10:41:00 GMT
-Expires 受限于本地时间，如果修改了本地时间，可能会造成缓存失效。所以限制基本都是使用 Cache-Control 替代 Expires。
+- 后续学习 nodejs，推荐使用 tailwind 实现原子化 css 以及响应式布局
 
-Cache-Control
-Cache-Control有很多属性，不同的属性代表的意义也不同:
-private：客户端可以缓存
-public：客户端和代理服务器都可以缓存
-max-age=x：缓存内容将在 x 秒后失效
-no-cache：需要使用协商缓存来验证缓存数据
-no-store：所有内容都不会缓存。
-s-maxage: 代理服务器使用，在代理服务器（例如Nginx,CDN）中优先于 max-age
-max-stale：能容忍的最大过期时间
-min-fresh：能够容忍的最小新鲜度
+# 123
 
-为什么Cache-Control优先级更高？
-Cache-Control 出现于 HTTP/1.1，优先级高于 Expires 。
-Cache-Control可以提供更精确的缓存控制，包括max-age、no-cache、no-store等指令，可以将多个指令配合起来一起使用，达到不同的缓存目的，而Expires只能指定一个绝对的过期时间。
-Cache-Control的指令可以通过max-age字段指定缓存的有效期，相对时间更容易计算和比较。
-Cache-Control的指令可以在请求和响应中使用，而Expires只能在响应中使用。
-Cache-Control的优先级高于Expires，当两者同时存在时，浏览器会优先使用Cache-Control的指令。
+```html
+<!-- <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+  </body>
+</html> -->
+<!doctype html>
+<html lang="en">
 
-# 协商缓存
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
 
-协商缓存可以通过设置两种 HTTP 请求头实现：Last-Modified 和 ETag 。
-服务器会将缓存标识与数据一起响应给客户端，客户端将它们备份至缓存中。再次请求时，客户端会将缓存中的标识发送给服务器，服务器根据此标识判断。若未失效，返回 304 状态码，浏览器拿到此状态码就可以直接使用本地缓存数据了。
+<body>
+  <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+    <div class="container">
+      <a href="#" class="navbar-brand">bootstrap</a>
 
-Last-Modified 和 If-Modified-Since
-浏览器在第一次访问资源时，服务器返回资源的同时，在响应头中添加 Last-Modified 的 header，Last-Modified 的值是这个资源在服务器上的最后修改时间，浏览器接收后缓存文件和 header；
-当浏览器再次请求服务器的时候，请求头携带 If-Modified-Since 字段来表示前面请求中缓存的 Last-Modified 值发送给服务器。
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-服务端收到此请求头发现有 if-Modified-Since，则与被请求资源的最后修改时间进行对比，如果一致则返回 304 和空响应体，浏览器只需要从缓存中获取信息即可，否则返回 200 和新的资源文件。
+      <div class="collapse navbar-collapse" id="navmenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <div class="nav-link">前端知识</div>
+          </li>
+          <li class="nav-item">
+            <div class="nav-link">后端知识</div>
+          </li>
+          <li class="nav-item">
+            <div class="nav-link">数据库知识</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-但是 Last-Modified 存在一些弊端：
-如果本地打开缓存文件，即使没有对文件进行修改，但还是会造成 Last-Modified 被修改，服务端不能命中缓存导致发送相同的资源
-因为 Last-Modified 只能以秒计时，如果在不可感知的时间内修改完成文件，那么服务端会认为资源还是命中了，不会返回正确的资源。
-因为以上这些弊端，所以在 HTTP/1.1 中出现了 ETag 和If-None-Match 。
+  <section class="p-5 bg-dark text-light text-center text-lg-start">
+    <div class="container">
+      <div class="d-flex">
+        <div>
+          <h1>立志成为<span class="text-warning">全栈工程师</span></h1>
+          <p class="my-4">
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti nobis placeat, vitae, eos ex, aliquam
+            inventore sunt pariatur optio iure earum! Animi, recusandae magnam odio facere autem sint repellat hic.
+            Praesentium provident dolor sunt quo maxime, repellat repellendus quos temporibus maiores illo voluptatibus,
+          </p>
+          <button class="btn btn-primary btn-lg">学！！！</button>
+        </div>
+        <img src="https://github.com/madaoQ/picgo-picture/blob/main/images/20241120184149.png?raw=true" alt="优秀程序员" class="w-50 d-none d-lg-block">
+      </div>
+    </div>
+  </section>
 
-ETag 和 If-None-Match
-ETag 是服务器响应请求时，返回当前资源文件的一个唯一标识(由服务器生成)，只要资源有变化，ETag 就会重新生成。ETag 优先级比 Last-Modified 高。
 
-浏览器在下一次向服务器发送请求时，会将上一次返回的 ETag 请求头的 If-None-Match 里，服务器只需比较客户端传来的 If-None-Match 的值跟自己服务器上该资源的 ETag 是否一致。
+  <section class="p-5 bg-primary text-light">
+    <div class="container">
+      <div class="d-md-flex justify-content-between align-items-center">
+        <h3 class="mb-3">开始学习</h3>
+        <div class="input-group news-input">
+          <input type="text" class="form-control" placeholder="输入邮箱">
+          <button class="btn btn-dark btn-lg">注册</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-如果服务器发现 ETag 匹配不上，那么说明资源更新了，直接以常规 GET 200 回包形式将新的资源（也包括了新的 ETag）发给客户端，如果 If-None-Match 的值和 ETag 是一致的，则直接返回 304，告诉客户端直接使用本地缓存即可。
+  <section class="p-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md">
+          <div class="card bg-dark text-light">
+            <div class="card-body text-center">
+              <div class="card-title ">前端知识</div>
+              <div class="card-text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quasi quaerat fugiat
+                vitae impedit quo cum </div>
+              <a href="#" class="btn btn-primary mt-2">学习前端</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="card bg-secondary text-light">
+            <div class="card-body  text-center">
+              <div class="card-title">前端知识</div>
+              <div class="card-text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quasi quaerat fugiat
+                vitae impedit quo cum </div>
+              <a href="#" class="btn btn-dark mt-2">学习前端</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="card bg-dark text-light">
+            <div class="card-body  text-center">
+              <div class="card-title">前端知识</div>
+              <div class="card-text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quasi quaerat fugiat
+                vitae impedit quo cum </div>
+              <a href="#" class="btn btn-primary mt-2">学习前端</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-虽然 ETag 更加精准，但是 ETag 要服务器通过算法来计算出一个特定的 Hash 值，会占用服务端计算的资源。所以在性能上ETag 反而要逊于 Last-Modified，所以其实我们反而比较少使用 ETag 。
+  <section class="p-5">
+    <div class="container">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-md">
+          <img src="https://github.com/madaoQ/picgo-picture/blob/main/images/20241120184205.png?raw=true" alt="图片1" class="img-fluid">
+        </div>
+        <div class="col-md p-5">
+          <h2>课程介绍</h2>
+          <p class="lead">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aperiam perferendis accusantium et illo labore
+            libero!
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, doloremque. Similique consectetur dolor
+            voluptatibus cumque temporibus minima ab vero dicta quidem? Perspiciatis dolorum accusamus in!
+          </p>
+          <a href="" class="btn btn-dark">查看更多</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-# 计算整个文件得到etag会耗费性能怎么解决
+  <section class="p-5 bg-dark text-light">
+    <div class="container">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-md p-5">
+          <h2>课程介绍</h2>
+          <p class="lead">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aperiam perferendis accusantium et illo labore
+            libero!
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, doloremque. Similique consectetur dolor
+            voluptatibus cumque temporibus minima ab vero dicta quidem? Perspiciatis dolorum accusamus in!
+          </p>
+          <a href="" class="btn btn-light">查看更多</a>
+        </div>
+        <div class="col-md">
+          <img src="https://github.com/madaoQ/picgo-picture/blob/main/images/20241120184205.png?raw=true" alt="图片1" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </section>
 
-1.etag 可以通过文件的 Last-Modified 和 content-length 计算。
-2.关掉
+  <section class="p-5">
+    <div class="container">
+      <h2 class="text-center">常见问题</h2>
+      <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+              Accordion Item #1
+            </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
+              <code>.accordion-flush</code> class. This is the first item's accordion body.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+              Accordion Item #2
+            </button>
+          </h2>
+          <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
+              <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being
+              filled with some actual content.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+              Accordion Item #3
+            </button>
+          </h2>
+          <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the
+              <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting
+              happening here in terms of content, but just filling up the space to make it look, at least at first
+              glance, a bit more representative of how this would look in a real-world application.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-# 不使用缓存的方式让每次请求都是最新的
+  <section class="p-5 bg-primary">
+    <div class="container">
+      <h2 class="text-center text-light">讲师介绍</h2>
+      <p class="lead text-center text-white mb-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa,
+        deleniti.
+      </p>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <img src="../code2.png" alt="pic1" class="mb-3 img-fluid rounded-circle profile-image">
+              <h3 class="card-title">张三</h3>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, quis?
+              </p>
+            </div>
+          </div>
+        </div>
 
-不使用缓存常见的方法是通过 url 拼接 random 的方式或者设置 Cache-Control 设置 no-cache。
+        <div class="col-md-6 col-lg-3">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <img src="../code3.png" alt="pic1" class="mb-3 img-fluid rounded-circle profile-image">
+              <h3 class="card-title">张三</h3>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, quis?
+              </p>
+            </div>
+          </div>
+        </div>
 
-# nostroe_nocache区别
+        <div class="col-md-6 col-lg-3">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <img src="../code2.png" alt="pic1" class="mb-3 img-fluid rounded-circle profile-image">
+              <h3 class="card-title">张三</h3>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, quis?
+              </p>
+            </div>
+          </div>
+        </div>
 
-no-store 禁止浏览器和中间服务器缓存。每次都从服务器获取。
-注意，no-store 才是真正的完完全全的禁止本地缓存。
-no-cache 每次请求都会验证该缓存是否过期。可以在本地缓存，可以在代理服务器缓存，但是这个缓存要服务器验证才可以使用
+        <div class="col-md-6 col-lg-3">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <img src="../code3.png" alt="pic1" class="mb-3 img-fluid rounded-circle profile-image">
+              <h3 class="card-title">张三</h3>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, quis?
+              </p>
+            </div>
+          </div>
+        </div>
 
-# 如何理解HTTP缓存
+      </div>
+    </div>
+  </section>
 
-首先通过 Cache-Control 验证强缓存是否可用
-如果强缓存可用，直接使用
-否则进入协商缓存，即发送 HTTP 请求，服务器通过请求头中的 If-Modified-Since 或者 If-None-Match 这些条件请求字段检查资源是否更新
-若资源更新，返回资源和200状态码
-否则，返回304，告诉浏览器直接从缓存获取资源
+  <section class="p-5">
+    <div class="container">
+      <h2 class="text-center mb-4">联系我们</h2>
+      <ul class="list-group list-group-flush text-center">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+        <li class="list-group-item">A fourth item</li>
+        <li class="list-group-item">And a fifth one</li>
+      </ul>
+    </div>
+  </section>
 
-# 代理服务器缓存
+  <footer class="p-5 bg-dark text-white text-center">
+    <div class="container">
+      <p class="lead">Copyright &copy; Q</p>
+    </div>
+  </footer>
 
-静态资源缓存：Nginx 可以缓存静态资源，如图片、CSS 和 JavaScript 文件。通过配置适当的缓存时间，可以减少服务器的负载并提高页面加载速度。
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
 
-反向代理缓存：Nginx 可以作为反向代理服务器，将请求转发给后端服务器，并缓存响应结果。这对于频繁请求的动态内容（如 API 响应）来说非常有用，可以减轻后端服务器的压力并提高响应速度。
+</html>
 
-HTTP 缓存控制：Nginx 可以根据请求头中的缓存相关字段（如 Cache-Control、Expires 和 Last-Modified）来控制缓存行为。通过合理配置这些字段，可以实现更精细的缓存策略，例如设置缓存过期时间、启用条件请求等。
-
-# 缓存代理是什么
-
-对于源服务器来说，它也是有缓存的，比如Redis, 对于 HTTP 缓存来说，如果每次客户端缓存失效都要到源服务器获取，那给源服务器的压力是很大的。
-由此引入了缓存代理的机制。让代理服务器接管一部分的服务端 HTTP 缓存，客户端缓存过期后就近到代理缓存中获取，代理缓存过期了才请求源服务器，这样流量巨大的时候能明显降低源服务器的压力。
-
-缓存代理的控制分为两部分，一部分是源服务器端的控制，一部分是客户端的控制
-
-源服务器的缓存控制
-1.private 和 public
-在源服务器的响应头中，会加上 Cache-Control 这个字段进行缓存控制字段，private 或者 public 表示是否允许代理服务器缓存，前者禁止，后者为允许。
-比如对于一些非常私密的数据，响应头部的 Cache-Control 设为private，而不是public。
-2.proxy-revalidate
-must-revalidate 的意思是客户端缓存过期就去源服务器获取，而 proxy-revalidate 则表示代理服务器的缓存过期后到源服务器获取。
-3.s-maxage
-s 是 share 的意思，限定了缓存在代理服务器中可以存放多久，和限制客户端缓存时间的max-age并不冲突。
-
-客户端的缓存控制
-1.max-stale 和 min-fresh
-在客户端的请求头中，可以加入这两个字段，来对代理服务器上的缓存进行宽容和限制操作。比如：
-max-stale: 5
-表示客户端到代理服务器上拿缓存的时候，即使代理缓存过期了也不要紧，只要过期时间在5秒之内，还是可以从代理中获取的。
-min-fresh: 5
-复制代码表示代理缓存需要一定的新鲜度，不要等到缓存刚好到期再拿，一定要在到期前 5 秒之前的时间拿，否则拿不到。
-2.only-if-cached
-这个字段加上后表示客户端只会接受代理缓存，而不会接受源服务器的响应。如果代理缓存无效，则直接返回504（Gateway Timeout）。
-
-# 缓存位置
-
-缓存位置分为四种，并且有优先级之分，当依次查找且都没有命中的时候，才会去发送请求获取资源：
-Service Worker
-Memory Cache
-Disk Cache
-Push Cache
-当上面四个缓存都没有命中，才会发送网络请求。
-
-# ServiceWorker
-
-Service Worker 是运行在浏览器背后的独立线程，使用 Service Worker 时传输协议必须为 HTTPS，因为其中涉及到请求拦截，不使 HTTPS 无法保障安全。
-
-Service Worker 实现缓存功能分为三个步骤：
-
-注册 Service Worker
-监听到 install 事件以后就可以缓存需要的文件
-下次用户访问时通过拦截请求的方式查询是否存在缓存，存在则使用
-如果 Service Worker 没能命中缓存，一般情况会使用 fetch() 方法继续获取资源。这时候，浏览器就去 memory cache 或者 disk cache 继续寻找缓存。注意：经过 Service Worker 的 fetch() 方法获取的资源，即便它并没有命中 Service Worker 缓存，甚至实际走了网络请求，也会标注为 from ServiceWorker。
-
-Service Worker 的最大特点是灵活直接，可以选择自己想要缓存的文件缓存
-
-# MemoryCache
-
-Memory Cache 即内存中的缓存，Memory Cache 读取速度比 Disk Cache 快，但是可是缓存持续性很短，会随着进程的释放而释放。 一旦我们关闭页面，内存中的缓存也就被释放了。在内存极端不够用的情况下，可能在页面还没关闭前排在前面的缓存就失效了。
-因为计算机内存一般比较小（相对硬盘来说），操作系统需要精打细算内存的使用，所以能让我们使用的内存并不多，操作系统会根据系统内存使用率来和文件的大小来判断是否使用内存缓存还是硬盘缓存
-
-# DiskCache
-
-Disk Cache 即存储在硬盘中的缓存，读取速度相对内存慢点，但是优点是容量大，存储时间也更长。所以绝大部分的缓存都来自 Disk Cache。
-大家可能会问，那 Disk Cache 的保存时间是多久呢？
-Disk Cache 的保存时间是不确定的，根据用户的使用习惯以及磁盘可用缓存大小来确定。当缓存的内容接近容量上限，浏览器便会采用特定的算法自动清理最不常用或者最老的缓存资源。
-
-# PushCache
-
-Push Cache 是 HTTP/2 中的内容，当以上三种缓存都没有命中时，它才会被使用。并且缓存时间也很短暂（在 Chrome 浏览器中大概只有5分钟），只在会话（Session）中存在，一旦会话结束就被释放，同时它也并非严格执行HTTP头中的缓存指令。
-
-# CDN缓存
-
-CDN（内容分发网络），解决的正是如何将数据快速可靠地从源站点传递到客户端。通过数据分发，用户可以从一个距离较近的服务器获取数据，而不是源站点，从大达实现快速访问，减少源站点负载均衡的压力。
-
-用户第一次访问网站后，网站的一些静态资源如图片等会被下载到本地，作为缓存，当用户第二次访问该网站的时候，浏览器就会从缓存中加载资源，不用向服务器请求资源，从而提高了网站的访问速度。若使用了CDN缓存，当浏览器本地缓存的资源过期后，浏览器不是直接向源站点请求资源，而是向CDN边缘请求资源。若CDN中的缓存过期，那就由CDN边缘节点向源站点发出回源请求来获取最新资源。
-
-CDN节点缓存机制在不同服务商中是不同的，但一般都遵循HTTP协议，通过http响应头中的Cache-Control:max-age的字段来设置CDN节点文件缓存时间。
-
-# 应用层缓存
-
-应用层缓存大体上我们可以把他们分成两类，一种是实现跟踪浏览器用户身份功能的 Cookies 与 Session， 以及为了解决 Cookies 弊端在 HTML5 时代所发展出来的 Web Storage。另一种是针对 PWA （ Progressive Web App）即渐进式 web 应用服务，是为了下一代 web APP 服务的缓存机制。
+```

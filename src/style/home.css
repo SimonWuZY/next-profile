@@ -1,0 +1,11 @@
+.gradient-text {
+    background: linear-gradient(90deg, #2d50ff, #9a2eff); /* 从蓝色到紫色渐变 */
+    background-clip: text; /* 使背景渐变应用到文字上 */
+    color: transparent; /* 让文字颜色透明，背景渐变会透过 */
+    display: inline-block;
+    text-shadow: 
+      0px 0px 5px rgba(128, 58, 240, 0.2),  /* 基本的阴影效果 */
+      0px 0px 15px rgba(138, 43, 226, 0.5); /* 紫色的光照效果 */
+  }
+  
+  
